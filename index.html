@@ -1,201 +1,937 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Appointment Scheduler</title>
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1.0">
+
+<title>Bookify Lite</title>
 
 <style>
+
+/* =======================================================
+                        BOOKIFY LITE CSS
+======================================================= */
+
+:root{
+
+--bg:#edf3fb;
+--card:#ffffff;
+--primary:#2563eb;
+--primaryHover:#1d4ed8;
+--success:#10b981;
+--danger:#ef4444;
+
+--text:#1e293b;
+--muted:#64748b;
+
+--border:#dbe5f2;
+
+--shadow:
+0 10px 30px rgba(0,0,0,.08);
+
+--radius:22px;
+
+--transition:.25s;
+
+}
+
+body.dark{
+
+--bg:#0f172a;
+
+--card:#1e293b;
+
+--primary:#3b82f6;
+
+--primaryHover:#60a5fa;
+
+--success:#22c55e;
+
+--danger:#ef4444;
+
+--text:#f8fafc;
+
+--muted:#94a3b8;
+
+--border:#334155;
+
+--shadow:
+0 10px 35px rgba(0,0,0,.45);
+
+}
+
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Segoe UI,Arial,sans-serif;
+
+margin:0;
+padding:0;
+
+box-sizing:border-box;
+
+}
+
+html{
+
+scroll-behavior:smooth;
+
 }
 
 body{
-    background:#eef2f7;
-    padding:30px;
+
+font-family:
+
+Inter,
+
+Segoe UI,
+
+Arial,
+
+sans-serif;
+
+background:var(--bg);
+
+color:var(--text);
+
+transition:var(--transition);
+
+padding:25px;
+
+}
+
+#app{
+
+max-width:1300px;
+
+margin:auto;
+
+}
+
+.topbar{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+margin-bottom:25px;
+
+}
+
+.brand{
+
+display:flex;
+
+align-items:center;
+
+gap:10px;
+
+font-size:28px;
+
+font-weight:700;
+
+}
+
+.headerButtons{
+
+display:flex;
+
+gap:10px;
+
+}
+
+.headerButtons button{
+
+width:48px;
+
+height:48px;
+
+border:none;
+
+border-radius:15px;
+
+background:var(--card);
+
+color:var(--text);
+
+box-shadow:var(--shadow);
+
+cursor:pointer;
+
+transition:var(--transition);
+
+font-size:18px;
+
+}
+
+.headerButtons button:hover{
+
+transform:translateY(-3px);
+
 }
 
 .container{
-    display:flex;
-    gap:30px;
-    max-width:1200px;
-    margin:auto;
+
+display:grid;
+
+grid-template-columns:
+
+2fr
+
+1fr;
+
+gap:25px;
+
 }
 
-.calendar{
-    flex:2;
-    background:white;
-    border-radius:15px;
-    padding:25px;
-    box-shadow:0 5px 20px rgba(0,0,0,.12);
+.calendarCard,
+
+.bookingCard{
+
+background:var(--card);
+
+border-radius:var(--radius);
+
+padding:25px;
+
+box-shadow:var(--shadow);
+
+transition:var(--transition);
+
 }
 
-.sidebar{
-    width:320px;
-    background:white;
-    border-radius:15px;
-    padding:25px;
-    box-shadow:0 5px 20px rgba(0,0,0,.12);
+.calendarHeader{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+margin-bottom:20px;
+
 }
 
-.header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:20px;
+.calendarHeader button{
+
+width:48px;
+
+height:48px;
+
+border:none;
+
+border-radius:50%;
+
+background:var(--primary);
+
+color:white;
+
+font-size:18px;
+
+cursor:pointer;
+
+transition:var(--transition);
+
 }
 
-.header button{
-    border:none;
-    background:#3b82f6;
-    color:white;
-    width:42px;
-    height:42px;
-    border-radius:50%;
-    cursor:pointer;
-    font-size:20px;
+.calendarHeader button:hover{
+
+background:var(--primaryHover);
+
+transform:scale(1.05);
+
 }
 
-.header button:hover{
-    background:#2563eb;
+.calendarHeader button:disabled{
+
+opacity:.35;
+
+cursor:not-allowed;
+
+transform:none;
+
 }
 
-.header h2{
-    font-size:24px;
+#monthTitle{
+
+font-size:28px;
+
+font-weight:700;
+
 }
 
-.weekdays,
-.days{
-    display:grid;
-    grid-template-columns:repeat(7,1fr);
-    gap:8px;
+.weekdays{
+
+display:grid;
+
+grid-template-columns:
+
+repeat(7,1fr);
+
+gap:8px;
+
+margin-bottom:8px;
+
 }
 
 .weekdays div{
-    text-align:center;
-    font-weight:bold;
-    color:#666;
-    padding:10px;
+
+padding:10px;
+
+text-align:center;
+
+font-weight:600;
+
+color:var(--muted);
+
+}
+
+#calendarGrid{
+
+display:grid;
+
+grid-template-columns:
+
+repeat(7,1fr);
+
+gap:8px;
+
 }
 
 .day{
-    aspect-ratio:1;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    border-radius:12px;
-    cursor:pointer;
-    transition:.2s;
-    font-weight:500;
+
+aspect-ratio:1;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+border-radius:16px;
+
+cursor:pointer;
+
+font-weight:600;
+
+border:2px solid transparent;
+
+transition:var(--transition);
+
+user-select:none;
+
 }
 
 .day:hover{
-    background:#dbeafe;
-}
 
-.other{
-    color:#bbb;
+background:#bfdbfe;
+
 }
 
 .today{
-    background:#3b82f6;
-    color:white;
+
+border-color:var(--primary);
+
 }
 
 .selected{
-    background:#10b981 !important;
-    color:white;
+
+background:var(--success)!important;
+
+color:white;
+
 }
 
 .past{
-    background:#d1d5db !important;
-    color:#888;
-    cursor:not-allowed;
+
+background:#d1d5db;
+
+color:#999;
+
+cursor:not-allowed;
+
 }
 
-.past:hover{
-    background:#d1d5db !important;
+body.dark .past{
+
+background:#374151;
+
+color:#6b7280;
+
 }
 
-.sidebar h3{
-    margin-bottom:8px;
+.booked{
+
+background:var(--danger);
+
+color:white;
+
+cursor:not-allowed;
+
+}
+
+.weekend{
+
+color:#dc2626;
+
+}
+
+/* =======================================================
+                    BOOKING PANEL
+======================================================= */
+
+.bookingCard h2{
+    font-size:30px;
+    margin-bottom:10px;
+}
+
+.cardSection{
+    margin-top:25px;
+}
+
+.cardSection h3{
+    margin-bottom:12px;
+    font-size:18px;
+    color:var(--text);
 }
 
 #selectedDate{
-    margin-bottom:20px;
-    color:#444;
-    font-size:18px;
+    background:var(--bg);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:15px;
+    min-height:54px;
+    display:flex;
+    align-items:center;
 }
 
-.time-list{
-    display:grid;
-    gap:10px;
-    max-height:500px;
-    overflow:auto;
-}
+input,
+textarea{
 
-.time-btn{
-    padding:12px;
-    border:none;
-    border-radius:10px;
-    background:#f3f4f6;
-    cursor:pointer;
-    transition:.2s;
+    width:100%;
+
+    padding:14px 16px;
+
+    margin-bottom:12px;
+
+    border-radius:14px;
+
+    border:1px solid var(--border);
+
+    background:var(--bg);
+
+    color:var(--text);
+
+    outline:none;
+
     font-size:15px;
+
+    transition:.25s;
+
 }
 
-.time-btn:hover{
-    background:#3b82f6;
-    color:white;
+textarea{
+    resize:vertical;
+    min-height:110px;
 }
 
-.time-btn.active{
-    background:#10b981;
-    color:white;
+input:focus,
+textarea:focus{
+
+    border-color:var(--primary);
+
+    box-shadow:0 0 0 3px rgba(37,99,235,.15);
+
 }
 
-.confirm{
-    width:100%;
-    margin-top:20px;
-    padding:14px;
+#summary{
+
+    background:var(--bg);
+
+    border-radius:14px;
+
+    border:1px solid var(--border);
+
+    padding:15px;
+
+    min-height:90px;
+
+    line-height:1.6;
+
+}
+
+/* =======================================================
+                    TIME BUTTONS
+======================================================= */
+
+#timeContainer{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:10px;
+
+    max-height:340px;
+
+    overflow-y:auto;
+
+    padding-right:4px;
+
+}
+
+.timeButton{
+
     border:none;
-    background:#3b82f6;
-    color:white;
+
+    background:var(--bg);
+
+    color:var(--text);
+
     border-radius:12px;
+
+    padding:13px;
+
     cursor:pointer;
-    font-size:16px;
+
+    font-weight:600;
+
+    transition:.2s;
+
 }
 
-.confirm:hover{
-    background:#2563eb;
+.timeButton:hover{
+
+    background:var(--primary);
+
+    color:white;
+
 }
 
-@media(max-width:900px){
-.container{
-    flex-direction:column;
+.timeButton.active{
+
+    background:var(--success);
+
+    color:white;
+
 }
-.sidebar{
+
+.timeButton.disabled{
+
+    background:#d1d5db;
+
+    color:#888;
+
+    pointer-events:none;
+
+    text-decoration:line-through;
+
+}
+
+body.dark .timeButton.disabled{
+
+    background:#374151;
+
+    color:#6b7280;
+
+}
+
+/* =======================================================
+                    BOOK BUTTON
+======================================================= */
+
+#bookButton{
+
     width:100%;
+
+    margin-top:25px;
+
+    border:none;
+
+    background:var(--primary);
+
+    color:white;
+
+    padding:16px;
+
+    border-radius:16px;
+
+    cursor:pointer;
+
+    font-size:17px;
+
+    font-weight:700;
+
+    transition:.25s;
+
 }
+
+#bookButton:hover{
+
+    background:var(--primaryHover);
+
+    transform:translateY(-2px);
+
 }
+
+#bookButton:disabled{
+
+    opacity:.5;
+
+    cursor:not-allowed;
+
+}
+
+/* =======================================================
+                    SUCCESS MODAL
+======================================================= */
+
+.modalOverlay{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.45);
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    opacity:0;
+
+    visibility:hidden;
+
+    transition:.25s;
+
+    z-index:999;
+
+}
+
+.modalOverlay.show{
+
+    opacity:1;
+
+    visibility:visible;
+
+}
+
+.modal{
+
+    background:var(--card);
+
+    width:min(420px,92%);
+
+    border-radius:22px;
+
+    padding:35px;
+
+    text-align:center;
+
+    box-shadow:var(--shadow);
+
+    animation:pop .25s ease;
+
+}
+
+.successIcon{
+
+    font-size:52px;
+
+    margin-bottom:15px;
+
+}
+
+.modal h2{
+
+    margin-bottom:15px;
+
+}
+
+.modal p{
+
+    color:var(--muted);
+
+    line-height:1.6;
+
+}
+
+.modal button{
+
+    margin-top:25px;
+
+    border:none;
+
+    background:var(--primary);
+
+    color:white;
+
+    padding:13px 26px;
+
+    border-radius:14px;
+
+    cursor:pointer;
+
+}
+
+/* =======================================================
+                    TOAST
+======================================================= */
+
+#toast{
+
+    position:fixed;
+
+    bottom:25px;
+
+    right:25px;
+
+    background:var(--success);
+
+    color:white;
+
+    padding:15px 22px;
+
+    border-radius:14px;
+
+    box-shadow:var(--shadow);
+
+    transform:translateY(30px);
+
+    opacity:0;
+
+    transition:.3s;
+
+    pointer-events:none;
+
+    z-index:1000;
+
+}
+
+#toast.show{
+
+    transform:translateY(0);
+
+    opacity:1;
+
+}
+
+/* =======================================================
+                    ANIMATIONS
+======================================================= */
+
+@keyframes pop{
+
+    from{
+
+        opacity:0;
+
+        transform:scale(.85);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:scale(1);
+
+    }
+
+}
+
+.fadeIn{
+
+    animation:fade .25s;
+
+}
+
+@keyframes fade{
+
+    from{
+
+        opacity:0;
+
+    }
+
+    to{
+
+        opacity:1;
+
+    }
+
+}
+
+/* =======================================================
+                    SCROLLBAR
+======================================================= */
+
+::-webkit-scrollbar{
+
+    width:8px;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:#cbd5e1;
+
+    border-radius:20px;
+
+}
+
+body.dark ::-webkit-scrollbar-thumb{
+
+    background:#475569;
+
+}
+
+/* =======================================================
+                    MOBILE
+======================================================= */
+
+@media(max-width:1000px){
+
+.container{
+
+grid-template-columns:1fr;
+
+}
+
+.bookingCard{
+
+order:-1;
+
+}
+
+}
+
+@media(max-width:650px){
+
+body{
+
+padding:10px;
+
+}
+
+.calendarCard,
+.bookingCard{
+
+padding:18px;
+
+border-radius:18px;
+
+}
+
+#monthTitle{
+
+font-size:22px;
+
+}
+
+.brand{
+
+font-size:22px;
+
+}
+
+#timeContainer{
+
+grid-template-columns:1fr;
+
+}
+
+.weekdays div{
+
+font-size:13px;
+
+}
+
+.day{
+
+font-size:14px;
+
+}
+
+input,
+textarea{
+
+font-size:16px;
+
+}
+
+}
+
 </style>
+
 </head>
+
 <body>
 
-<div class="container">
+<div id="app">
 
-<div class="calendar">
+<header class="topbar">
 
-<div class="header">
-<button onclick="changeMonth(-1)">◀</button>
-<h2 id="monthYear"></h2>
-<button onclick="changeMonth(1)">▶</button>
+<div class="brand">
+
+📅
+<span id="businessName">
+
+Bookify Lite
+
+</span>
+
+</div>
+
+<div class="headerButtons">
+
+<button
+id="themeButton"
+title="Toggle Dark Mode">
+
+🌙
+
+</button>
+
+</div>
+
+</header>
+
+<main class="container">
+
+<section class="calendarCard">
+
+<div class="calendarHeader">
+
+<button
+id="prevMonth">
+
+◀
+
+</button>
+
+<h2 id="monthTitle">
+
+Loading...
+
+</h2>
+
+<button
+id="nextMonth">
+
+▶
+
+</button>
+
 </div>
 
 <div class="weekdays">
+
 <div>Mon</div>
 <div>Tue</div>
 <div>Wed</div>
@@ -203,196 +939,1602 @@ body{
 <div>Fri</div>
 <div>Sat</div>
 <div>Sun</div>
-</div>
-
-<div class="days" id="calendarDays"></div>
 
 </div>
 
-<div class="sidebar">
+<div
+id="calendarGrid">
 
-<h3>Selected Date</h3>
+<!-- calendar -->
 
-<div id="selectedDate">
-Click a date
 </div>
 
-<h3>Select Time</h3>
+</section>
 
-<div class="time-list" id="times"></div>
+<aside class="bookingCard">
 
-<button class="confirm" onclick="confirmBooking()">
-Confirm Appointment
+<h2>
+
+Appointment
+
+</h2>
+
+<div class="cardSection">
+
+<h3>
+
+Selected Date
+
+</h3>
+
+<p id="selectedDate">
+
+Choose a day
+
+</p>
+
+</div>
+
+<div class="cardSection">
+
+<h3>
+
+Available Times
+
+</h3>
+
+<div
+id="timeContainer">
+
+Please choose a date.
+
+</div>
+
+</div>
+
+<div class="cardSection">
+
+<h3>
+
+Your Information
+
+</h3>
+
+<input
+id="name"
+type="text"
+placeholder="Full name">
+
+<input
+id="email"
+type="email"
+placeholder="Email address">
+
+<input
+id="phone"
+type="tel"
+placeholder="Phone">
+
+<textarea
+id="notes"
+rows="4"
+placeholder="Notes (optional)"></textarea>
+
+</div>
+
+<div class="cardSection">
+
+<h3>
+
+Summary
+
+</h3>
+
+<div
+id="summary">
+
+No booking selected.
+
+</div>
+
+</div>
+
+<button
+id="bookButton">
+
+Book Appointment
+
+</button>
+
+</aside>
+
+</main>
+
+</div>
+
+<!-- Success Modal -->
+
+<div
+id="successModal"
+class="modalOverlay">
+
+<div class="modal">
+
+<div class="successIcon">
+
+✅
+
+</div>
+
+<h2>
+
+Booking Successful
+
+</h2>
+
+<p
+id="successMessage">
+
+</p>
+
+<button
+id="closeModal">
+
+Close
+
 </button>
 
 </div>
 
 </div>
 
+<!-- Toast -->
+
+<div
+id="toast">
+
+Saved
+
+</div>
+
 <script>
 
-const monthNames=[
+/*==========================================================
+
+CONFIG
+
+==========================================================*/
+
+const SETTINGS={
+
+businessName:"Bookify Lite",
+
+openingHour:9,
+
+closingHour:18,
+
+interval:30,
+
+allowWeekends:false,
+
+monthsAhead:6,
+
+lunchStart:"12:00",
+
+lunchEnd:"13:00",
+
+defaultDarkMode:false
+
+};
+
+/*==========================================================
+
+GLOBAL VARIABLES
+
+==========================================================*/
+
+const STORAGE_KEY="bookifyBookings";
+
+let bookings={};
+
+let currentMonth=new Date();
+
+currentMonth.setDate(1);
+
+let selectedDate=null;
+
+let selectedTime=null;
+
+let darkMode=false;
+
+/*==========================================================
+
+CACHE DOM
+
+==========================================================*/
+
+const calendarGrid=
+document.getElementById("calendarGrid");
+
+const monthTitle=
+document.getElementById("monthTitle");
+
+const selectedDateLabel=
+document.getElementById("selectedDate");
+
+const summary=
+document.getElementById("summary");
+
+const timeContainer=
+document.getElementById("timeContainer");
+
+const toast=
+document.getElementById("toast");
+
+const modal=
+document.getElementById("successModal");
+
+const successMessage=
+document.getElementById("successMessage");
+
+/*==========================================================
+
+BOOKIFY LITE
+PART 3A
+
+Utilities + Storage + Startup
+
+==========================================================*/
+
+/* -------------------------
+   MONTH NAMES
+------------------------- */
+
+const MONTHS=[
 "January","February","March","April","May","June",
 "July","August","September","October","November","December"
 ];
 
-let current=new Date();
-let selectedDate=null;
-let selectedTime=null;
+const WEEKDAYS=[
+"Monday",
+"Tuesday",
+"Wednesday",
+"Thursday",
+"Friday",
+"Saturday",
+"Sunday"
+];
 
-function generateTimes(){
+/* -------------------------
+   DATE HELPERS
+------------------------- */
 
-const list=document.getElementById("times");
-list.innerHTML="";
+function cloneDate(date){
 
-for(let h=0;h<24;h++){
-
-for(let m=0;m<60;m+=30){
-
-let hh=String(h).padStart(2,"0");
-let mm=String(m).padStart(2,"0");
-
-let btn=document.createElement("button");
-
-btn.className="time-btn";
-
-btn.innerText=`${hh}:${mm}`;
-
-btn.onclick=function(){
-
-document.querySelectorAll(".time-btn")
-.forEach(b=>b.classList.remove("active"));
-
-btn.classList.add("active");
-
-selectedTime=btn.innerText;
-
-};
-
-list.appendChild(btn);
+    return new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate()
+    );
 
 }
 
-}
+function today(){
+
+    const d=new Date();
+
+    d.setHours(0,0,0,0);
+
+    return d;
 
 }
 
-generateTimes();
+function isToday(date){
 
-function render(){
+    return cloneDate(date).getTime()===today().getTime();
 
-const month=current.getMonth();
-const year=current.getFullYear();
-
-document.getElementById("monthYear").innerText=
-monthNames[month]+" "+year;
-
-const grid=document.getElementById("calendarDays");
-grid.innerHTML="";
-
-const first=new Date(year,month,1);
-
-let start=first.getDay();
-start=(start===0)?6:start-1;
-
-const days=new Date(year,month+1,0).getDate();
-
-for(let i=0;i<start;i++){
-let blank=document.createElement("div");
-grid.appendChild(blank);
 }
 
-const today=new Date();
-today.setHours(0,0,0,0);
+function isPast(date){
 
-for(let d=1;d<=days;d++){
+    return cloneDate(date)<today();
 
-let div=document.createElement("div");
-
-div.className="day";
-
-div.innerText=d;
-
-if(
-today.getDate()==d &&
-today.getMonth()==month &&
-today.getFullYear()==year
-){
-div.classList.add("today");
 }
 
-const cellDate = new Date(year, month, d);
-cellDate.setHours(0,0,0,0);
+function sameDate(a,b){
 
-if(cellDate < today){
-    div.classList.add("past");
+    return cloneDate(a).getTime()===cloneDate(b).getTime();
+
 }
 
-div.onclick=function(){
+function formatKey(date){
 
-    if(cellDate < today){
+    return date.toISOString().split("T")[0];
 
-        document.getElementById("selectedDate").innerHTML=
-        "<span style='color:#ef4444;font-weight:bold;'>This date has already passed.</span>";
+}
+
+function formatHuman(date){
+
+    return date.toLocaleDateString(undefined,{
+
+        weekday:"long",
+
+        day:"numeric",
+
+        month:"long",
+
+        year:"numeric"
+
+    });
+
+}
+
+/* -------------------------
+   STORAGE
+------------------------- */
+
+function loadBookings(){
+
+    const data=localStorage.getItem(STORAGE_KEY);
+
+    if(!data){
+
+        bookings={};
 
         return;
+
     }
 
-    document.querySelectorAll(".day")
-        .forEach(e=>e.classList.remove("selected"));
+    try{
 
-    div.classList.add("selected");
+        bookings=JSON.parse(data);
 
-    selectedDate = new Date(year,month,d);
+    }
 
-    document.getElementById("selectedDate").innerText =
-        selectedDate.toLocaleDateString(undefined,{
-            weekday:"long",
-            day:"numeric",
-            month:"long",
-            year:"numeric"
-        });
+    catch{
+
+        bookings={};
+
+    }
+
+}
+
+function saveBookings(){
+
+    localStorage.setItem(
+
+        STORAGE_KEY,
+
+        JSON.stringify(bookings)
+
+    );
+
+}
+
+/* -------------------------
+   TOAST
+------------------------- */
+
+function showToast(text){
+
+    toast.innerText=text;
+
+    toast.classList.add("show");
+
+    setTimeout(()=>{
+
+        toast.classList.remove("show");
+
+    },2500);
+
+}
+
+/* -------------------------
+   MODAL
+------------------------- */
+
+function showSuccess(text){
+
+    successMessage.innerHTML=text;
+
+    modal.classList.add("show");
+
+}
+
+document
+.getElementById("closeModal")
+.onclick=()=>{
+
+    modal.classList.remove("show");
 
 };
 
-grid.appendChild(div);
+/* -------------------------
+   DARK MODE
+------------------------- */
+
+function setDark(enabled){
+
+    darkMode=enabled;
+
+    document.body.classList.toggle(
+
+        "dark",
+
+        enabled
+
+    );
+
+    localStorage.setItem(
+
+        "bookify_dark",
+
+        enabled
+
+    );
 
 }
 
-}
+document
+.getElementById("themeButton")
+.onclick=()=>{
 
-function changeMonth(x){
+    setDark(!darkMode);
 
-current.setMonth(current.getMonth()+x);
+};
 
-render();
+const rememberedDark=
+localStorage.getItem("bookify_dark");
 
-}
+if(rememberedDark===null){
 
-render();
+    setDark(
+        SETTINGS.defaultDarkMode
+    );
 
-function confirmBooking(){
+}else{
 
-if(!selectedDate){
-alert("Please choose a date.");
-return;
-}
-
-if(!selectedTime){
-alert("Please choose a time.");
-return;
-}
-
-alert(
-"Appointment booked for\n\n"+
-selectedDate.toDateString()+
-"\n"+
-selectedTime
-);
+    setDark(
+        rememberedDark==="true"
+    );
 
 }
+
+/* -------------------------
+   STARTUP
+------------------------- */
+
+document.getElementById(
+"businessName"
+).innerText=
+SETTINGS.businessName;
+
+loadBookings();
+
+/* -------------------------
+   CALENDAR ENGINE
+------------------------- */
+
+function daysInMonth(year, month){
+
+    return new Date(year, month + 1, 0).getDate();
+
+}
+
+function firstWeekday(year, month){
+
+    let day = new Date(year, month, 1).getDay();
+
+    day = (day === 0) ? 6 : day - 1;
+
+    return day;
+
+}
+
+function canGoPreviousMonth(){
+
+    return !(
+        currentMonth.getFullYear() === today().getFullYear() &&
+        currentMonth.getMonth() === today().getMonth()
+    );
+
+}
+
+function previousMonth(){
+
+    if(!canGoPreviousMonth()) return;
+
+    currentMonth.setMonth(currentMonth.getMonth()-1);
+
+    renderCalendar();
+
+}
+
+function nextMonth(){
+
+    const future = new Date(today());
+
+    future.setMonth(future.getMonth()+SETTINGS.monthsAhead);
+
+    if(currentMonth >= future) return;
+
+    currentMonth.setMonth(currentMonth.getMonth()+1);
+
+    renderCalendar();
+
+}
+
+document
+.getElementById("prevMonth")
+.onclick=previousMonth;
+
+document
+.getElementById("nextMonth")
+.onclick=nextMonth;
+
+function renderCalendar(){
+
+    calendarGrid.innerHTML="";
+
+    const year=currentMonth.getFullYear();
+
+    const month=currentMonth.getMonth();
+
+    monthTitle.innerText=
+        MONTHS[month]+" "+year;
+
+    document
+    .getElementById("prevMonth")
+    .disabled=!canGoPreviousMonth();
+
+    const offset=
+        firstWeekday(year,month);
+
+    for(let i=0;i<offset;i++){
+
+        const blank=document.createElement("div");
+
+        calendarGrid.appendChild(blank);
+
+    }
+
+    const totalDays=
+        daysInMonth(year,month);
+
+    for(let d=1;d<=totalDays;d++){
+
+        const cell=document.createElement("div");
+
+        cell.className="day fadeIn";
+
+        cell.innerText=d;
+
+        const date=
+            new Date(year,month,d);
+
+        const weekday=
+            date.getDay();
+
+        if(weekday===0||weekday===6){
+
+            cell.classList.add("weekend");
+
+        }
+
+        if(isToday(date)){
+
+            cell.classList.add("today");
+
+        }
+
+        if(isPast(date)){
+
+            cell.classList.add("past");
+
+        }
+
+        const key=formatKey(date);
+
+        if(bookings[key]){
+
+            const bookedCount=
+                Object.keys(bookings[key]).length;
+
+            const maxSlots=
+                ((SETTINGS.closingHour-SETTINGS.openingHour)*60)
+                /SETTINGS.interval;
+
+            if(bookedCount>=maxSlots){
+
+                cell.classList.add("booked");
+
+            }
+
+        }
+
+        if(
+            selectedDate &&
+            sameDate(date,selectedDate)
+        ){
+
+            cell.classList.add("selected");
+
+        }
+
+        if(!isPast(date)){
+
+            cell.onclick=function(){
+
+                selectDate(date);
+
+            };
+
+        }
+
+        calendarGrid.appendChild(cell);
+
+    }
+
+}
+
+/* -------------------------
+   PLACEHOLDER
+------------------------- */
+
+function selectDate(date){
+
+    selectedDate=date;
+
+    renderCalendar();
+
+}
+
+/* -------------------------
+   START
+------------------------- */
+
+renderCalendar();
+
+/* -------------------------
+   TIME ENGINE
+------------------------- */
+
+function buildTimeSlots(){
+
+    timeContainer.innerHTML="";
+
+    if(!selectedDate){
+
+        timeContainer.innerHTML=
+        "<p>Select a date to see available times.</p>";
+
+        updateSummary();
+
+        return;
+
+    }
+
+    selectedDateLabel.innerText=
+        formatHuman(selectedDate);
+
+    selectedTime=null;
+
+    const todayDate=today();
+
+    const isSelectedToday=
+        sameDate(selectedDate,todayDate);
+
+    const now=new Date();
+
+    const bookedForDay=
+        bookings[formatKey(selectedDate)] || {};
+
+    for(
+        let hour=SETTINGS.openingHour;
+        hour<SETTINGS.closingHour;
+        hour++
+    ){
+
+        for(
+            let minute=0;
+            minute<60;
+            minute+=SETTINGS.interval
+        ){
+
+            const hh=String(hour).padStart(2,"0");
+            const mm=String(minute).padStart(2,"0");
+
+            const label=`${hh}:${mm}`;
+
+            /* Skip lunch */
+
+            if(
+                label>=SETTINGS.lunchStart &&
+                label<SETTINGS.lunchEnd
+            ){
+
+                continue;
+
+            }
+
+            const btn=document.createElement("button");
+
+            btn.className="timeButton";
+
+            btn.innerText=label;
+
+            let disabled=false;
+
+            /* Past time today */
+
+            if(isSelectedToday){
+
+                const slot=new Date(selectedDate);
+
+                slot.setHours(hour,minute,0,0);
+
+                if(slot<=now){
+
+                    disabled=true;
+
+                }
+
+            }
+
+            /* Already booked */
+
+            if(bookedForDay[label]){
+
+                disabled=true;
+
+            }
+
+            if(disabled){
+
+                btn.classList.add("disabled");
+
+            }else{
+
+                btn.onclick=function(){
+
+                    document
+                    .querySelectorAll(".timeButton")
+                    .forEach(button=>
+                        button.classList.remove("active")
+                    );
+
+                    btn.classList.add("active");
+
+                    selectedTime=label;
+
+                    updateSummary();
+
+                };
+
+            }
+
+            timeContainer.appendChild(btn);
+
+        }
+
+    }
+
+    updateSummary();
+
+}
+
+/* -------------------------
+   SELECT DATE
+------------------------- */
+
+function selectDate(date){
+
+    selectedDate=date;
+
+    selectedTime=null;
+
+    renderCalendar();
+
+    buildTimeSlots();
+
+}
+
+/* -------------------------
+   SUMMARY
+------------------------- */
+
+function updateSummary(){
+
+    let html="";
+
+    if(selectedDate){
+
+        html+=
+        "<strong>Date</strong><br>";
+
+        html+=
+        formatHuman(selectedDate);
+
+        html+="<br><br>";
+
+    }
+
+    if(selectedTime){
+
+        html+=
+        "<strong>Time</strong><br>";
+
+        html+=
+        selectedTime;
+
+        html+="<br><br>";
+
+    }
+
+    const name=
+        document.getElementById("name").value.trim();
+
+    if(name){
+
+        html+=
+        "<strong>Name</strong><br>";
+
+        html+=name;
+
+    }
+
+    if(html===""){
+
+        html="No booking selected.";
+
+    }
+
+    summary.innerHTML=html;
+
+}
+
+/* -------------------------
+   UPDATE SUMMARY LIVE
+------------------------- */
+
+[
+"name",
+"email",
+"phone",
+"notes"
+].forEach(id=>{
+
+    document
+    .getElementById(id)
+    .addEventListener(
+        "input",
+        updateSummary
+    );
+
+});
+
+/* -------------------------
+   INITIALIZE
+------------------------- */
+
+buildTimeSlots();
+
+/* ==========================================================
+
+PART 6 - BOOKING MANAGEMENT
+
+========================================================== */
+
+function getBookingsForDate(date){
+
+    const key=formatKey(date);
+
+    return bookings[key] || {};
+
+}
+
+function refreshBookingsList(){
+
+    if(!selectedDate) return;
+
+    const dayBookings=getBookingsForDate(selectedDate);
+
+    const keys=Object.keys(dayBookings);
+
+    if(keys.length===0){
+
+        return;
+
+    }
+
+    console.log("Bookings for",formatHuman(selectedDate));
+
+    keys.sort().forEach(time=>{
+
+        console.log(time,dayBookings[time]);
+
+    });
+
+}
+
+/* ------------------------- */
+
+function exportBookings(){
+
+    const blob=new Blob(
+
+        [
+
+            JSON.stringify(bookings,null,2)
+
+        ],
+
+        {
+
+            type:"application/json"
+
+        }
+
+    );
+
+    const a=document.createElement("a");
+
+    a.href=URL.createObjectURL(blob);
+
+    a.download="bookings.json";
+
+    a.click();
+
+    URL.revokeObjectURL(a.href);
+
+}
+
+/* ------------------------- */
+
+function importBookings(file){
+
+    const reader=new FileReader();
+
+    reader.onload=function(){
+
+        try{
+
+            bookings=JSON.parse(reader.result);
+
+            saveBookings();
+
+            renderCalendar();
+
+            buildTimeSlots();
+
+            showToast("Bookings imported.");
+
+        }
+
+        catch{
+
+            showToast("Invalid JSON.");
+
+        }
+
+    };
+
+    reader.readAsText(file);
+
+}
+
+/* ------------------------- */
+
+function clearBookings(){
+
+    if(!confirm("Delete ALL bookings?")){
+
+        return;
+
+    }
+
+    bookings={};
+
+    saveBookings();
+
+    renderCalendar();
+
+    buildTimeSlots();
+
+    showToast("All bookings removed.");
+
+}
+
+/* ------------------------- */
+
+window.exportBookings=exportBookings;
+
+window.clearBookings=clearBookings;
+
+/* ------------------------- */
+
+const importInput=document.createElement("input");
+
+importInput.type="file";
+
+importInput.accept=".json";
+
+importInput.style.display="none";
+
+document.body.appendChild(importInput);
+
+importInput.onchange=function(){
+
+    if(this.files.length){
+
+        importBookings(this.files[0]);
+
+    }
+
+};
+
+window.importBookings=function(){
+
+    importInput.click();
+
+};
+
+/* ------------------------- */
+
+const controls=document.createElement("div");
+
+controls.style.marginTop="20px";
+
+controls.innerHTML=`
+
+<button onclick="exportBookings()">
+
+Export Bookings
+
+</button>
+
+<button onclick="importBookings()">
+
+Import Bookings
+
+</button>
+
+<button onclick="clearBookings()">
+
+Clear All
+
+</button>
+
+`;
+
+document
+
+.querySelector(".bookingCard")
+
+.appendChild(controls);
+
+/* ------------------------- */
+
+const observer=new MutationObserver(function(){
+
+    refreshBookingsList();
+
+});
+
+observer.observe(summary,{
+
+    childList:true,
+
+    subtree:true
+
+});
+
+/* ==========================================================
+
+PART 7 - POLISH & UX
+
+========================================================== */
+
+/* ---------- Better Summary ---------- */
+
+function updateSummary(){
+
+    const name=document.getElementById("name").value.trim();
+    const email=document.getElementById("email").value.trim();
+    const phone=document.getElementById("phone").value.trim();
+    const notes=document.getElementById("notes").value.trim();
+
+    let html="";
+
+    if(selectedDate){
+
+        html+="<b>📅 Date</b><br>";
+        html+=formatHuman(selectedDate)+"<br><br>";
+
+    }
+
+    if(selectedTime){
+
+        html+="<b>🕒 Time</b><br>";
+        html+=selectedTime+"<br><br>";
+
+    }
+
+    if(name){
+
+        html+="<b>👤 Name</b><br>";
+        html+=name+"<br><br>";
+
+    }
+
+    if(email){
+
+        html+="<b>📧 Email</b><br>";
+        html+=email+"<br><br>";
+
+    }
+
+    if(phone){
+
+        html+="<b>📱 Phone</b><br>";
+        html+=phone+"<br><br>";
+
+    }
+
+    if(notes){
+
+        html+="<b>📝 Notes</b><br>";
+        html+=notes;
+
+    }
+
+    if(html===""){
+
+        html="No booking selected.";
+
+    }
+
+    summary.innerHTML=html;
+
+}
+
+/* ---------- Mobile Auto Scroll ---------- */
+
+function scrollToTimes(){
+
+    if(window.innerWidth<900){
+
+        document
+        .getElementById("timeContainer")
+        .scrollIntoView({
+
+            behavior:"smooth",
+
+            block:"start"
+
+        });
+
+    }
+
+}
+
+/* ---------- Improve Date Selection ---------- */
+
+const oldSelectDate=selectDate;
+
+selectDate=function(date){
+
+    oldSelectDate(date);
+
+    scrollToTimes();
+
+};
+
+/* ---------- Better Toast ---------- */
+
+function showToast(text){
+
+    toast.innerHTML=text;
+
+    toast.classList.add("show");
+
+    clearTimeout(showToast.timer);
+
+    showToast.timer=setTimeout(()=>{
+
+        toast.classList.remove("show");
+
+    },3000);
+
+}
+
+/* ---------- Keyboard Shortcuts ---------- */
+
+window.addEventListener("keydown",e=>{
+
+    if(e.key==="Escape"){
+
+        modal.classList.remove("show");
+
+    }
+
+    if(e.key==="Enter"){
+
+        const active=document.activeElement;
+
+        if(
+            active.tagName!=="TEXTAREA"
+        ){
+
+            document
+            .getElementById("bookButton")
+            .click();
+
+        }
+
+    }
+
+});
+
+/* ---------- Refresh Summary ---------- */
+
+["name","email","phone","notes"]
+.forEach(id=>{
+
+    document
+    .getElementById(id)
+    .addEventListener(
+        "input",
+        updateSummary
+    );
+
+});
+
+/* ---------- Startup ---------- */
+
+updateSummary();
+
+console.log("Bookify Lite loaded successfully.");
+
+/* ==========================================================
+
+PART 8 - FINAL FEATURES
+
+========================================================== */
+
+/* ---------- SETTINGS ---------- */
+
+SETTINGS.businessLogo = "📅";
+SETTINGS.timeFormat = 24; // 24 or 12
+
+SETTINGS.holidays = [
+    // Example:
+    // "2026-12-25",
+    // "2026-01-01"
+];
+
+/* ---------- FORMAT TIME ---------- */
+
+function displayTime(time){
+
+    if(SETTINGS.timeFormat===24)
+        return time;
+
+    let [h,m]=time.split(":");
+
+    h=parseInt(h);
+
+    const ampm=h>=12?"PM":"AM";
+
+    h=h%12;
+
+    if(h===0) h=12;
+
+    return `${h}:${m} ${ampm}`;
+
+}
+
+/* ---------- HOLIDAY CHECK ---------- */
+
+function isHoliday(date){
+
+    return SETTINGS.holidays.includes(
+        formatKey(date)
+    );
+
+}
+
+/* ---------- AVAILABLE SLOT COUNTER ---------- */
+
+function updateAvailableCounter(){
+
+    if(!selectedDate) return;
+
+    const booked=
+        bookings[
+            formatKey(selectedDate)
+        ] || {};
+
+    let total=0;
+
+    for(
+        let h=SETTINGS.openingHour;
+        h<SETTINGS.closingHour;
+        h++
+    ){
+
+        for(
+            let m=0;
+            m<60;
+            m+=SETTINGS.interval
+        ){
+
+            const t=
+                String(h).padStart(2,"0")
+                +":"
+                +String(m).padStart(2,"0");
+
+            if(
+                t>=SETTINGS.lunchStart &&
+                t<SETTINGS.lunchEnd
+            ) continue;
+
+            total++;
+
+        }
+
+    }
+
+    const free=
+        total-
+        Object.keys(booked).length;
+
+    summary.innerHTML+=`
+
+<hr style="margin:15px 0">
+
+<b>Available Slots</b>
+
+<br>
+
+${free} of ${total}
+
+`;
+
+}
+
+/* ---------- SEARCH BOOKINGS ---------- */
+
+function searchBooking(){
+
+    const query=prompt(
+        "Enter email or phone"
+    );
+
+    if(!query) return;
+
+    for(const day in bookings){
+
+        for(const time in bookings[day]){
+
+            const b=bookings[day][time];
+
+            if(
+
+                b.email===query ||
+
+                b.phone===query
+
+            ){
+
+                showSuccess(
+
+                `
+                <h3>Booking Found</h3>
+
+                <br>
+
+                📅 ${day}
+
+                <br>
+
+                🕒 ${displayTime(time)}
+
+                <br><br>
+
+                👤 ${b.name}
+
+                <br>
+
+                📧 ${b.email}
+
+                <br>
+
+                📞 ${b.phone}
+
+                `);
+
+                return;
+
+            }
+
+        }
+
+    }
+
+    showToast("No booking found.");
+
+}
+
+/* ---------- CANCEL BOOKING ---------- */
+
+function cancelBooking(){
+
+    const email=
+        prompt("Email used for booking");
+
+    if(!email) return;
+
+    for(const day in bookings){
+
+        for(const time in bookings[day]){
+
+            if(bookings[day][time].email===email){
+
+                if(!confirm(
+                    "Cancel booking?"
+                )) return;
+
+                delete bookings[day][time];
+
+                if(
+                    Object.keys(bookings[day]).length===0
+                ){
+
+                    delete bookings[day];
+
+                }
+
+                saveBookings();
+
+                renderCalendar();
+
+                buildTimeSlots();
+
+                showToast("Booking cancelled.");
+
+                return;
+
+            }
+
+        }
+
+    }
+
+    showToast("Booking not found.");
+
+}
+
+/* ---------- PRINT ---------- */
+
+function printAppointment(){
+
+    window.print();
+
+}
+
+/* ---------- EXTRA BUTTONS ---------- */
+
+const footer=document.createElement("div");
+
+footer.style.marginTop="25px";
+
+footer.style.display="grid";
+
+footer.style.gap="10px";
+
+footer.innerHTML=`
+
+<button onclick="searchBooking()">
+
+Search Booking
+
+</button>
+
+<button onclick="cancelBooking()">
+
+Cancel Booking
+
+</button>
+
+<button onclick="printAppointment()">
+
+Print Summary
+
+</button>
+
+`;
+
+document
+.querySelector(".bookingCard")
+.appendChild(footer);
+
+/* ---------- PATCH SUMMARY ---------- */
+
+const oldSummary=updateSummary;
+
+updateSummary=function(){
+
+    oldSummary();
+
+    updateAvailableCounter();
+
+};
+
+/* ---------- LOGO ---------- */
+
+document.querySelector(".brand").innerHTML=`
+
+${SETTINGS.businessLogo}
+
+<span id="businessName">
+
+${SETTINGS.businessName}
+
+</span>
+
+`;
+
+/* ---------- HOLIDAY PATCH ---------- */
+
+const originalRender=renderCalendar;
+
+renderCalendar=function(){
+
+    originalRender();
+
+    [...document.querySelectorAll(".day")]
+
+    .forEach(cell=>{
+
+        const day=parseInt(cell.innerText);
+
+        if(isNaN(day)) return;
+
+        const d=new Date(
+
+            currentMonth.getFullYear(),
+
+            currentMonth.getMonth(),
+
+            day
+
+        );
+
+        if(isHoliday(d)){
+
+            cell.classList.add("booked");
+
+            cell.onclick=null;
+
+        }
+
+    });
+
+};
+
+renderCalendar();
+
+console.log("Bookify Lite v1.0 Ready");
+
+/* ==========================================================
+
+END OF APPLICATION
+
+========================================================== */
 
 </script>
 
 </body>
+
 </html>
